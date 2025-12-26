@@ -359,10 +359,10 @@ class MoviePlayer:
             try:
                 frame_num = int(clip_name.split('e')[1].split('f')[0])
             except:
-                frame_num = np.NaN
-            coords = np.NaN
+                frame_num = np.nan
+            coords = np.nan
         # As we don't have any of the data about the parent video, we'll leave it blank for the user to fill later:
-        entry= {'clip_name': clip_name, 'parent_video': np.NaN,
+        entry= {'clip_name': clip_name, 'parent_video': np.nan,
                               'frame': frame_num, 'coordinates': coords,
                               'comments': '', 'reviewer_label': None}
         return entry
@@ -376,7 +376,7 @@ class MoviePlayer:
                 if self.column_names[key] not in self.log.columns:
                     self.log[self.column_names[key]] = 0
         else:
-            self.log['reviewer_label'] = np.NaN
+            self.log['reviewer_label'] = np.nan
         for i,vid in enumerate(self.file_paths):
             # Iterate over the video files that were loaded and enter them as new rows in the dataframe:
             clip_name = os.path.basename(vid) # Get video name
@@ -398,7 +398,7 @@ class MoviePlayer:
                 # if log uses old column names, change it to comply with new naming system
                 self.log = self.log.rename(columns={'label': 'reviewer_label'})
             elif not 'reviewer_label' in self.log.columns:
-                self.log['reviewer_label'] = np.NaN
+                self.log['reviewer_label'] = np.nan
         else:
             for key in self.label_var.keys():
                 if self.column_names[key] not in self.log.columns:

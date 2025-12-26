@@ -76,12 +76,16 @@ class AdvanceMovieCutterGUI:
             self.curr_movie_cutter.start_frame = int(x)
             self.curr_movie_cutter.set_start_frame()
 
+        def set_limit(x):
+            self.curr_movie_cutter.frame_limit = int(x)
+
         self.attribute_value_dict = {'brighten': (self.curr_movie_cutter.brighten, 'Brighten', set_bright),
                                      'blur': (self.curr_movie_cutter.blur[0], 'Blur', set_blur),
                                      'min_width': (self.curr_movie_cutter.min_width, 'Minimum Blob Width', set_width),
                                      'min_height': (self.curr_movie_cutter.min_height, 'Minimum Blob Height', set_height),
                                      'clip_length': (self.curr_movie_cutter.movie_length-1, 'Clip Length', set_length),
-                                     'start_frame': (self.curr_movie_cutter.start_frame, 'Start Frame', set_start)}
+                                     'start_frame': (self.curr_movie_cutter.start_frame, 'Start Frame', set_start),
+                                     'frame_limit': (int(self.curr_movie_cutter.frame_limit), 'Frame Limit', set_limit)}
 
     def focus_next(self, event):
         self.update_attributes(event)

@@ -12,7 +12,7 @@ import warnings
 class MovieProcessor:
     """Process videos to detect fish larvae using classic image processing with OpenCV."""
     def __init__(self,vid_path, save_dir, brighten=50, blur=(0,0), min_width=70, min_height=70,
-                 apply_brightness=False, num_train_frame=500, fps=30, start_frame=0, frame_limit=1000):
+                 apply_brightness=False, num_train_frame=500, fps=30, start_frame=0, frame_limit=None):
         """Initiate a processor object. inputs:
         vid_path - location of the video to process
         save_dir - location to save the processed video
@@ -39,14 +39,14 @@ class MovieProcessor:
             self.blur = blur
         self.fps = fps
         # Create a video capture object:
-        if vid_path.endswith('.avi') or vid_path.endswith('.mp4'):
+        if vid_path.lower().endswith('.avi') or vid_path.lower().endswith('.mp4'):
             self.cap = cv2.VideoCapture(vid_path)
             self.avi = True
             # Get the number of frames in the original video:
             self.num_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
             # Get the frame dimensions:
             self.SHAPE = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
-        elif vid_path.endswith('.seq'):
+        elif vid_path.lower().endswith('.seq'):
             self.cap = SEQReader(vid_path)
             self.avi = False
             self.num_frames = self.cap.properties['AllocatedFrames']
@@ -75,7 +75,10 @@ class MovieProcessor:
         # codec for video writing, see https://www.pyimagesearch.com/2016/02/22/writing-to-video-with-opencv/:
         self.fourcc = cv2.VideoWriter_fourcc(*"MJPG")#cv2.VideoWriter_fourcc(*'RGBA')
         self.start_frame = start_frame  # set the frame of the video where processing will start
-        self.frame_limit = frame_limit
+        if frame_limit:
+            self.frame_limit = frame_limit
+        else:
+            self.frame_limit = self.num_frames
         self.apply_brightness = apply_brightness # Apply the brightness adjustment to the saved video
 
     @staticmethod
@@ -273,7 +276,7 @@ class MovieCutter(MovieProcessor):
     MOVIE_PREFIX = 'cutout'  # movie file name prefix
 
     def __init__(self, vid_path, save_dir, padding=325, fps=30, start_frame=0,  movie_format='.avi',
-                 movie_length=200, save_movies=True,  progressbar=[], trainlabel=[]):
+                 movie_length=200, save_movies=True,  progressbar=None, trainlabel=None):
         """ Initiate a MovieCutter instance to chop fish larvae movies into segments.
         inputs:
         vid_path - path of the video file to cut
@@ -413,7 +416,8 @@ class MovieCutter(MovieProcessor):
         for key in list(self.contour_dict):
             entry = self.contour_dict[key]
             # Check if the length of the current video segment has reached the desired length:
-            if entry[2] == self.movie_length:
+            # Check if the length of the current video segment has reached the desired length:
+            if int(entry[2]) == int(self.movie_length):
                 # Close the video segment to release resources:
                 self.close_segment(entry[3], key)
                 continue  # And move on to the next video
@@ -437,8 +441,9 @@ class MovieCutter(MovieProcessor):
 
     def update_gui_lbl(self,msg):
         """ Update a LabelerGUI with a message to the user."""
-        self.trainlabel.configure(text=msg)
-        self.trainlabel.update()
+        if self.trainlabel:
+            self.trainlabel.configure(text=msg)
+            self.trainlabel.update()
 
     def create_saving_dir(self):
         """ Create a directory to save movie segments in, name it after video file name."""

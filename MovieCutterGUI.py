@@ -146,7 +146,7 @@ class CutterApp():
 
 
 if __name__ == '__main__':
-    sys.stderr = open(os.devnull, "w")
+    # sys.stderr = open(os.devnull, "w")
     CutterApp()
-    sys.stderr = sys.__stderr__
+    # sys.stderr = sys.__stderr__
 
